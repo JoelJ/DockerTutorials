@@ -46,6 +46,16 @@ docker $(docker-machine config overlay1) network create -d overlay testnet
 docker $(docker-machine config overlay2) network ls
 ```
 
+You should see something like this:
+
+```
+joeljohnson@mbp $ docker $(docker-machine config overlay2) network ls
+NETWORK ID          NAME                DRIVER
+1d8df6f2f62d        bridge              bridge              
+  ...              
+8ed76b8f546f        testnet             overlay 
+```
+
 ## Run some containers
 
 ```bash
