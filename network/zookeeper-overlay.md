@@ -37,4 +37,34 @@ This creates two docker daemons, adding the flags to the daemon.
 It looks like to me that the engine-opt flag tells the daemon to store in Zookeeper the ip address of that interface.
 Then other nodes will use that interface to communicate.
 
-Now we create the network. We only have to do this on one of the two nodes, and the other will pull the network from zookeeper.
+## Create the network
+
+Now we create the network. We only have to do this on one of the two nodes, and the other will pull the network config from zookeeper.
+
+```bash
+docker $(docker-machine config overlay1) network create -d overlay testnet
+docker $(docker-machine config overlay2) network ls
+```
+
+## Run some containers
+
+```bash
+docker $(docker-machine config overlay1) run -d --net=testnet --name=webserver nginx
+docker $(docker-machine config overlay2) run -it --net=testnet --name=pinger busybox ping webserver.testnet
+```
+
+You should see something like this:
+
+```
+PING webserver.testnet (10.0.0.4): 56 data bytes
+64 bytes from 10.0.0.4: seq=0 ttl=64 time=0.993 ms
+64 bytes from 10.0.0.4: seq=1 ttl=64 time=0.312 ms
+64 bytes from 10.0.0.4: seq=2 ttl=64 time=0.335 ms
+64 bytes from 10.0.0.4: seq=3 ttl=64 time=0.272 ms
+^C
+--- webserver.testnet ping statistics ---
+4 packets transmitted, 4 packets received, 0% packet loss
+round-trip min/avg/max = 0.272/0.478/0.993 ms
+```
+
+Enjoy!
